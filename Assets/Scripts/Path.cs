@@ -1,24 +1,27 @@
 using UnityEngine;
 using UnityEngine.Splines;
+using System.Linq;
 
 public class Path : MonoBehaviour
 {
     [SerializeField] private SplineContainer splineContainer;
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private int segmentCount = 100;
-    [SerializeField] private Transform movingObject;
+
+    private Car[] allCars;
 
     private void Start()
     {
         InitializeComponents();
         DrawFullSplinePath();
+        allCars = FindObjectsOfType<Car>();
     }
 
     private void Update()
     {
-        if (AreComponentsValid())
+        if (Input.GetKeyDown(KeyCode.R)) // Add a key to manually reset all cars (for testing)
         {
-            UpdateLineRendererWithMovingObject();
+            ResetAllCars();
         }
     }
 
@@ -30,14 +33,9 @@ public class Path : MonoBehaviour
         }
     }
 
-    private bool AreComponentsValid()
-    {
-        return splineContainer != null && lineRenderer != null && movingObject != null;
-    }
-
     private void DrawFullSplinePath()
     {
-        if (!AreComponentsValid()) return;
+        if (splineContainer == null || lineRenderer == null) return;
 
         lineRenderer.positionCount = segmentCount;
         for (int i = 0; i < segmentCount; i++)
@@ -48,46 +46,10 @@ public class Path : MonoBehaviour
         }
     }
 
-    private void UpdateLineRendererWithMovingObject()
-    {
-        float closestT = FindClosestTOnSpline(movingObject.position);
-        int erasedPointCount = Mathf.FloorToInt(closestT * segmentCount);
-
-        for (int i = 0; i < segmentCount; i++)
-        {
-            Vector3 position = (i <= erasedPointCount) 
-                ? movingObject.position 
-                : EvaluateSplinePosition(GetNormalizedIndex(i));
-            
-            lineRenderer.SetPosition(i, position);
-        }
-    }
-
     public Vector3 EvaluateSplinePosition(float t)
     {
         Vector3 localPosition = splineContainer.Spline.EvaluatePosition(t);
         return splineContainer.transform.TransformPoint(localPosition);
-    }
-
-    private float FindClosestTOnSpline(Vector3 targetPosition)
-    {
-        float closestT = 0f;
-        float minDistance = float.MaxValue;
-
-        for (int i = 0; i < segmentCount; i++)
-        {
-            float t = GetNormalizedIndex(i);
-            Vector3 position = EvaluateSplinePosition(t);
-            float distance = Vector3.Distance(position, targetPosition);
-
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestT = t;
-            }
-        }
-
-        return closestT;
     }
 
     private float GetNormalizedIndex(int index)
@@ -95,20 +57,12 @@ public class Path : MonoBehaviour
         return index / (float)(segmentCount - 1);
     }
 
-    public float GetPreviousKnotPosition(float currentPosition)
+    public void ResetAllCars()
     {
-        Spline spline = splineContainer.Spline;
-        int knotCount = spline.Count;
-
-        for (int i = 1; i < knotCount; i++)
+        foreach (var car in allCars)
         {
-            float knotT = (float)i / (knotCount - 1);
-            if (knotT > currentPosition)
-            {
-                return (float)(i - 1) / (knotCount - 1);
-            }
+            car.StartCoroutine(car.GetComponent<Car>().ResetToStart());
         }
-
-        return (float)(knotCount - 2) / (knotCount - 1);
+        Car.ResetGlobalCollisionState();
     }
 }

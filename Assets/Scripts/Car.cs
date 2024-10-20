@@ -4,20 +4,26 @@ using System.Collections;
 
 public class Car : MonoBehaviour, IInteractable
 {
-    private SplineAnimate splineAnimate;
+    public SplineAnimate SplineAnimate { get; private set; }
     private Path path;
-    private float lastKnotPosition;
-    private bool isReversing = false;
-    private float reverseCooldown = 1f; // Cooldown time in seconds
-    private float lastReverseTime = -1f;
+    private bool isResetting = false;
+    private static bool globalCollisionOccurred = false;
 
     private void Start()
     {
-        splineAnimate = GetComponent<SplineAnimate>();
+        SplineAnimate = GetComponent<SplineAnimate>();
         path = FindObjectOfType<Path>();
         if (path == null)
         {
             Debug.LogError("Path component not found in the scene.");
+        }
+    }
+
+    private void Update()
+    {
+        if (globalCollisionOccurred && !isResetting)
+        {
+            StartCoroutine(ResetToStart());
         }
     }
 
@@ -29,55 +35,46 @@ public class Car : MonoBehaviour, IInteractable
 
     private void PlaySplineAnimation()
     {
-        if (splineAnimate != null)
+        if (SplineAnimate != null && !SplineAnimate.isPlaying && !globalCollisionOccurred)
         {
-            splineAnimate.Play();
+            SplineAnimate.Play();
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if ((collision.gameObject.CompareTag("Car") || collision.gameObject.CompareTag("Obstacle")) && !isReversing)
+        if (collision.gameObject.CompareTag("Car") || collision.gameObject.CompareTag("Obstacle"))
         {
-            StartCoroutine(ReverseToLastKnot());
+            globalCollisionOccurred = true;
         }
     }
 
-    private IEnumerator ReverseToLastKnot()
+    public IEnumerator ResetToStart()
     {
-        if (splineAnimate != null && path != null && Time.time - lastReverseTime > reverseCooldown)
+        isResetting = true;
+        SplineAnimate.Pause();
+
+        float startTime = Time.time;
+        float journeyLength = SplineAnimate.NormalizedTime;
+        float speed = 1f; // Adjust this value to control the speed of reversal
+
+        while (SplineAnimate.NormalizedTime > 0)
         {
-            isReversing = true;
-            lastReverseTime = Time.time;
-
-            // Pause the animation
-            splineAnimate.Pause();
-
-            // Get the previous knot position
-            lastKnotPosition = path.GetPreviousKnotPosition(splineAnimate.NormalizedTime);
-
-            // Move to the previous knot position
-            float startTime = Time.time;
-            float journeyLength = Mathf.Abs(splineAnimate.NormalizedTime - lastKnotPosition);
-            Vector3 startPosition = transform.position;
-            Vector3 endPosition = path.EvaluateSplinePosition(lastKnotPosition);
-
-            while (Time.time - startTime < 0.5f) // 0.5 seconds for the reverse movement
-            {
-                float fractionOfJourney = (Time.time - startTime) / 0.5f;
-                transform.position = Vector3.Lerp(startPosition, endPosition, fractionOfJourney);
-                yield return null;
-            }
-
-            // Set the final position and update the spline animate component
-            transform.position = endPosition;
-            splineAnimate.NormalizedTime = lastKnotPosition;
-
-            // Wait for a short duration before allowing movement again
-            yield return new WaitForSeconds(0.5f);
-
-            isReversing = false;
+            float distanceCovered = (Time.time - startTime) * speed;
+            float fractionOfJourney = distanceCovered / journeyLength;
+            SplineAnimate.NormalizedTime = Mathf.Lerp(journeyLength, 0, fractionOfJourney);
+            yield return null;
         }
+
+        SplineAnimate.NormalizedTime = 0f;
+        yield return new WaitForSeconds(0.5f);
+
+        isResetting = false;
+        globalCollisionOccurred = false;
+    }
+
+    public static void ResetGlobalCollisionState()
+    {
+        globalCollisionOccurred = false;
     }
 }
-

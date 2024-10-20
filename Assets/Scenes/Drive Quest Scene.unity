@@ -680,7 +680,7 @@ PrefabInstance:
     - target: {fileID: 4409296936383886082, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
       propertyPath: m_MaxSpeed
-      value: 3.202856
+      value: 3.7788136
       objectReference: {fileID: 0}
     - target: {fileID: 4409296936383886082, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
@@ -792,11 +792,21 @@ PrefabInstance:
       propertyPath: m_Center.z
       value: 0.020223599
       objectReference: {fileID: 0}
+    - target: {fileID: 6967162639768907365, guid: 4410c7f13e949ac438666890565f4582,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7378572511678333716, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
       propertyPath: splineContainer
       value: 
       objectReference: {fileID: 83564287}
+    - target: {fileID: 8862750824473420860, guid: 4410c7f13e949ac438666890565f4582,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 116
+      objectReference: {fileID: 0}
     - target: {fileID: 8862750824473420860, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
       propertyPath: m_IsKinematic
@@ -1110,7 +1120,7 @@ PrefabInstance:
     - target: {fileID: 4409296936383886082, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
       propertyPath: m_MaxSpeed
-      value: 2.9725182
+      value: 2.2116404
       objectReference: {fileID: 0}
     - target: {fileID: 4409296936383886082, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
@@ -1227,11 +1237,21 @@ PrefabInstance:
       propertyPath: m_Center.z
       value: 0.020223597
       objectReference: {fileID: 0}
+    - target: {fileID: 6967162639768907365, guid: 4410c7f13e949ac438666890565f4582,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7378572511678333716, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
       propertyPath: splineContainer
       value: 
       objectReference: {fileID: 1837732549}
+    - target: {fileID: 8862750824473420860, guid: 4410c7f13e949ac438666890565f4582,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 116
+      objectReference: {fileID: 0}
     - target: {fileID: 8862750824473420860, guid: 4410c7f13e949ac438666890565f4582,
         type: 3}
       propertyPath: m_IsKinematic
@@ -1849,7 +1869,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

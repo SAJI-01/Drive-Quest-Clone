@@ -10,7 +10,7 @@ public class HandleContainer : MonoBehaviour
     [SerializeField] private Vector3 popAnimationScale = new Vector3(1.1f, 1.1f, 1.1f); 
     [SerializeField] private float popAnimationDuration = 0.2f; 
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Car"))
         {
