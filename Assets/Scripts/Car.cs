@@ -1,68 +1,59 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Splines;
-using System.Collections;
 
 public class Car : MonoBehaviour, IInteractable
 {
-    public SplineAnimate SplineAnimate { get; private set; }
+    private SplineAnimate SplineAnimate { get; set; }
     private Path path;
-    private bool isResetting = false;
-    private static bool globalCollisionOccurred = false;
+    private bool isResetting;
+    private static bool isCarsCollisionOccurred;
+    [SerializeField] private float reversalSpeed = 1f;
 
     private void Start()
     {
         SplineAnimate = GetComponent<SplineAnimate>();
         path = FindObjectOfType<Path>();
-        if (path == null)
-        {
-            Debug.LogError("Path component not found in the scene.");
-        }
+        if (path == null) Debug.LogError("Path component not found in the scene.");
     }
 
     private void Update()
     {
-        if (globalCollisionOccurred && !isResetting)
-        {
-            StartCoroutine(ResetToStart());
-        }
+        if (isCarsCollisionOccurred && !isResetting) StartCoroutine(ResetToStart());
     }
 
     public void Interact()
     {
-        Debug.Log($"Interacting with car: {gameObject.name}");
+        Debug.Log($"Interacting with car: <color=green>{gameObject.name}</color>");
         PlaySplineAnimation();
     }
 
     private void PlaySplineAnimation()
     {
-        if (SplineAnimate != null && !SplineAnimate.isPlaying && !globalCollisionOccurred)
-        {
-            SplineAnimate.Play();
-        }
+        if (SplineAnimate != null && !SplineAnimate.IsPlaying && !isCarsCollisionOccurred) SplineAnimate.Play();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Car") || collision.gameObject.CompareTag("Obstacle"))
-        {
-            globalCollisionOccurred = true;
-        }
+            isCarsCollisionOccurred = true;
     }
 
     public IEnumerator ResetToStart()
     {
         isResetting = true;
+        gameObject.SetActive(true);
+
         SplineAnimate.Pause();
 
-        float startTime = Time.time;
-        float journeyLength = SplineAnimate.NormalizedTime;
-        float speed = 1f; // Adjust this value to control the speed of reversal
+        var startTime = Time.time;
+        var splineTimeLenght = SplineAnimate.NormalizedTime;
 
         while (SplineAnimate.NormalizedTime > 0)
         {
-            float distanceCovered = (Time.time - startTime) * speed;
-            float fractionOfJourney = distanceCovered / journeyLength;
-            SplineAnimate.NormalizedTime = Mathf.Lerp(journeyLength, 0, fractionOfJourney);
+            var distanceCovered = (Time.time - startTime) * reversalSpeed;
+            var reverseCoveredDistance = distanceCovered / splineTimeLenght;
+            SplineAnimate.NormalizedTime = Mathf.Lerp(splineTimeLenght, 0, reverseCoveredDistance);
             yield return null;
         }
 
@@ -70,11 +61,11 @@ public class Car : MonoBehaviour, IInteractable
         yield return new WaitForSeconds(0.5f);
 
         isResetting = false;
-        globalCollisionOccurred = false;
+        isCarsCollisionOccurred = false;
     }
 
     public static void ResetGlobalCollisionState()
     {
-        globalCollisionOccurred = false;
+        isCarsCollisionOccurred = false;
     }
 }
