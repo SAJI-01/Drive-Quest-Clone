@@ -1,14 +1,18 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 public class HandleContainer : MonoBehaviour
 {
     [SerializeField] private Transform containerDoorSlider;
-    [SerializeField] private float targetScaleY = 0f;
+    [SerializeField] private Vector3 targetScale;
+    [SerializeField] private float targetPositionZ = 0.5f;
     [SerializeField] private float durationDoorSlider = 1f;
-    [SerializeField] private Vector3 popAnimationScale = new Vector3(1.1f, 1.1f, 1.1f); 
+    [SerializeField] private Vector3 popAnimationScale; 
     [SerializeField] private float popAnimationDuration = 0.2f;
+    
+    public Loader loader;
     
 
     private void OnTriggerEnter(Collider other)
@@ -17,15 +21,14 @@ public class HandleContainer : MonoBehaviour
         {
             gameObject.GetComponent<Collider>().enabled = false;
             other.gameObject.SetActive(false);
-            OpenContainerDoor();
+            CloseContainerDoor();
         }
     }
 
-    private void OpenContainerDoor()
+    private void CloseContainerDoor()
     {
-        Sequence doorSequence = DOTween.Sequence();
-        doorSequence.Append(containerDoorSlider.DOScaleY(targetScaleY, durationDoorSlider).SetEase(Ease.Linear));
-        doorSequence.Join(containerDoorSlider.DOMoveY(containerDoorSlider.position.y - targetScaleY * 0.5f, durationDoorSlider).SetEase(Ease.Linear)).OnComplete(PopupAnimation);
+        containerDoorSlider.DOScale(new Vector3(targetScale.x, targetScale.y, targetScale.z), durationDoorSlider).SetEase(Ease.Linear).OnComplete(PopupAnimation);
+        
     }
     
     private void PopupAnimation()
