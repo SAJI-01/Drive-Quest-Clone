@@ -9,6 +9,17 @@ TagManager:
   - RedShip
   - BlueShip
   - YellowShip
+  - RedCar
+  - BlueCar
+  - GreenCar
+  - YellowCar
+  - PurpleCar
+  - PinkCar
+  - GreenShip
+  - PurpleShip
+  - OrangeShip
+  - PinkShip
+  - OrangeCar
   layers:
   - Default
   - TransparentFX

@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 6487131218200739304}
   - component: {fileID: 4718153263490004655}
   m_Layer: 0
-  m_Name: Container Holder
+  m_Name: Container Holder (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -669,20 +669,24 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8b7e1c14337f0f142ba013c1c8eca38d,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2421813452788908950}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8b7e1c14337f0f142ba013c1c8eca38d,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 3113337817882418661}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8b7e1c14337f0f142ba013c1c8eca38d,
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3677997634904000951}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8b7e1c14337f0f142ba013c1c8eca38d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2421813452788908950}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8b7e1c14337f0f142ba013c1c8eca38d,
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 5553740330636094973}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8b7e1c14337f0f142ba013c1c8eca38d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9117363243948765337}
   m_SourcePrefab: {fileID: 100100000, guid: 8b7e1c14337f0f142ba013c1c8eca38d, type: 3}
 --- !u!4 &2743169930406306488 stripped
 Transform:
@@ -717,3 +721,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 7.179067, y: 0.60950696, z: 2.2281017}
   m_Center: {x: -0.5095338, y: 0.4109618, z: 0}
+--- !u!114 &9117363243948765337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3268032403932116994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcca2d03b1fd415989ac506e8c1004e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerSlots:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

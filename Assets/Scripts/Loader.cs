@@ -1,11 +1,11 @@
-using System;
+/*using System;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class Loader : MonoBehaviour
 {
     public UnityEvent onContainerFilled;
-    public Color[] colors;
+    public Material[] ContainerMaterials;
     [Header("Dock Loaders")]
     public Transform dockLoader;
     public GameObject dockLoadersPrefab;
@@ -58,10 +58,8 @@ public class Loader : MonoBehaviour
 
     private void OnContainerFilled()
     {
-        if (isRedShip)
-        {
-            LoadOntoShip();
-        }
+        DetectShip();
+        Debug.Log("Container filled");
     }
 
     private void LoadOntoShip()
@@ -71,13 +69,16 @@ public class Loader : MonoBehaviour
 
     private void Update()
     {
+    }
+
+    private void DetectShip()
+    {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, 3))
         {
             switch (hit.collider.gameObject.tag)
             {
                 case "RedShip":
-                    isRedShip = true;
                     break;
                 case "GreenShip":
                     isGreenShip = true;
@@ -97,8 +98,16 @@ public class Loader : MonoBehaviour
                 case "PinkShip":
                     isPinkShip = true;
                     break;
+                default:
+                    LoadOnDockGround();
+                    break;
             }
         }
+    }
+
+    private void LoadOnDockGround()
+    {
+        
     }
 
     private void OnDestroy()
@@ -112,4 +121,4 @@ public class Loader : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, transform.forward * 3);
     }
-}
+}*/

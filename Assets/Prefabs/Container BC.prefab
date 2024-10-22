@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7490791641276422087}
   - component: {fileID: 9201146969489870983}
   - component: {fileID: 15530879449170862}
+  - component: {fileID: 98667741695049521}
+  - component: {fileID: 2153822504943205269}
   m_Layer: 0
   m_Name: Container BC
   m_TagString: Untagged
@@ -112,6 +114,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ba7d5aa88246ebb11f1c9b82a0cbac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &98667741695049521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198098963165044855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6df5d98cb47d4b35a14ca71c45cc09bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerDoorSlider: {fileID: 852104016568895967}
+  targetScale: {x: 0.5, y: 0.03, z: 0.5}
+  durationDoorSlider: 0.3
+  popAnimationScale: {x: 0.9, y: 0.9, z: 0.9}
+  popAnimationDuration: 0.2
+  acceptedCarType: 0
+--- !u!135 &2153822504943205269
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 198098963165044855}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.07
+  m_Center: {x: 0, y: 0.012, z: 0.29}
 --- !u!1 &6848750745379834570
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,8 +164,6 @@ GameObject:
   - component: {fileID: 8965244187300666694}
   - component: {fileID: 2741760689552340483}
   - component: {fileID: 4374135069091261782}
-  - component: {fileID: 5983830062261417072}
-  - component: {fileID: 8478216116727629469}
   m_Layer: 0
   m_Name: container
   m_TagString: Obstacle
@@ -197,46 +236,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &5983830062261417072
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6848750745379834570}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.0020751765
-  m_Center: {x: 0, y: 0.012, z: -0.01}
---- !u!114 &8478216116727629469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6848750745379834570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66a15404db193974db95358706f03d20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  containerDoorSlider: {fileID: 852104016568895967}
-  targetScale: {x: 0.5, y: 0.03, z: 0.5}
-  targetPositionZ: 0.19
-  durationDoorSlider: 0.3
-  popAnimationScale: {x: 1, y: 1, z: 1}
-  popAnimationDuration: 0.2
-  loader: {fileID: 0}
 --- !u!1 &8910472765420484212
 GameObject:
   m_ObjectHideFlags: 0
