@@ -8,7 +8,7 @@ public class DockManager : MonoBehaviour, IDockManager
     [SerializeField] private GameObject dockPrefab;
     private List<Transform> availableDocks = new List<Transform>();
     
-    public void InitializeDocks(int count, float gap)
+    public void InitializeDocks(int count, float gap, Vector3 scale)
     {
         float totalWidth = (count - 1) * gap;
         float startX = dockParent.position.x - (totalWidth * 0.5f);
@@ -22,6 +22,7 @@ public class DockManager : MonoBehaviour, IDockManager
             );
 
             GameObject dock = Instantiate(dockPrefab, position, dockPrefab.transform.rotation, dockParent);
+            dock.transform.localScale = scale;
             dock.name = $"DockLoader_{i}"; 
             availableDocks.Add(dock.transform);
         }

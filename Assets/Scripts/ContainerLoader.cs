@@ -17,8 +17,12 @@ public class ContainerLoader : MonoBehaviour, IContainerLoader
     {
         Vector3 startPos = container.transform.position;
         Vector3 endPos = destination.position;
+        Vector3 startRot = container.transform.localRotation.eulerAngles;
+        Vector3 endRot = Vector3.zero;
         float length = Vector3.Distance(startPos, endPos);
         float startTime = Time.time;
+        container.transform.GetChild(0).GetComponent<Obstacle>().DisableAllColliders();
+        
 
         while (container.transform.position != endPos)
         {
@@ -26,8 +30,12 @@ public class ContainerLoader : MonoBehaviour, IContainerLoader
             float coveredSoFar = distanceCovered / length;
             
             container.transform.position = Vector3.Lerp(startPos, endPos, coveredSoFar);
-            container.transform.SetParent(destination);
+            if(container.transform.localRotation != Quaternion.Euler(endRot))
+            {
+                container.transform.localRotation = Quaternion.Euler(Vector3.Lerp(startRot, endRot, coveredSoFar));
+            }
             yield return null;
         }
+        container.transform.SetParent(destination);
     }
 }

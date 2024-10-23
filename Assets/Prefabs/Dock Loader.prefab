@@ -30,7 +30,7 @@ Transform:
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0.7071068, w: 0}
   m_LocalPosition: {x: -1.68, y: 0.012, z: 3.61}
   m_LocalScale: {x: 0.5916208, y: 1.1446023, z: 0.5000001}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3452107196280949296}
   m_Father: {fileID: 0}

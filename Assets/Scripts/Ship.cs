@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
@@ -7,13 +5,12 @@ public class Ship : MonoBehaviour
 {
     [Header("Configuration")]
     [SerializeField] private Transform[] containerSlots;
-    private GameObject[] containers;
     [SerializeField] private float shipTime = 5f;
-    private RaycastHit hit;
-    private bool isShipFull = false;
 
     private int currentSlotIndex = 0;
     public string ShipType { get; private set; }
+    public bool IsFullyLoaded => currentSlotIndex >= containerSlots.Length;
+
     private void Awake()
     {
         ValidateComponents();
@@ -24,44 +21,32 @@ public class Ship : MonoBehaviour
     {
         if (containerSlots == null || containerSlots.Length == 0)
         {
-            Debug.LogError($"No container slots assigned to ship {gameObject.name}! Assign Slots in the inspector.");
+            Debug.LogError($"No container slots assigned to ship {gameObject.name}!");
             enabled = false;
         }
     }
 
     private void Update()
     {
-        if (currentSlotIndex == containerSlots.Length && !isShipFull)
+        if (IsFullyLoaded)
         {
-            isShipFull = true;
-            StartCoroutine(GetIsFilledContainer());
+            StartCoroutine(DepartShip());
         }
-        
     }
-
-    private IEnumerator GetIsFilledContainer()
-    {
-        yield return new WaitForSeconds(1f);
-        ShipAllContainers();
-    }
-
 
     public Transform GetNextAvailableSlot()
     {
         if (currentSlotIndex < containerSlots.Length)
         {
-            return containerSlots[currentSlotIndex++]; 
+            return containerSlots[currentSlotIndex++];
         }
         return null;
     }
-    
-    private void ShipAllContainers()
+
+    private System.Collections.IEnumerator DepartShip()
     {
-        transform.DOMoveX(transform.position.x + 10, shipTime).OnComplete(() =>
-        {
-            containerSlots = null;
-            Debug.Log($"All containers shipped on {gameObject.name}");
-            Destroy(gameObject);
-        });
+        yield return new WaitForSeconds(1f);
+        transform.DOMoveX(transform.position.x + 20, shipTime)
+            .OnComplete(() => Destroy(gameObject));
     }
 }

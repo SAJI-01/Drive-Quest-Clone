@@ -10,6 +10,7 @@ public class ShipDetector : MonoBehaviour, IShipDetector
         if (Physics.Raycast(position, direction, out hit, distance))
         {
             detectedShipType = hit.collider.gameObject.tag.Replace("Ship", "");
+            Debug.Log($"Detected ship!!: <color=red>{detectedShipType}</color>");
             
             return true;
         }
@@ -22,6 +23,6 @@ public class ShipDetector : MonoBehaviour, IShipDetector
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(transform.position, transform.forward * 3);
+        Gizmos.DrawRay(transform.position, transform.forward * 3f);
     }
 }
