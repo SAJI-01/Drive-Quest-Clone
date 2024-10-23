@@ -3,15 +3,13 @@ using UnityEngine;
 
 public class LoadingManager : MonoBehaviour
 {
-    [Header("Required Components")] [SerializeField]
-    private ShipDetector shipDetector;
-
+    [Header("Required Components")] 
+    [SerializeField] private ShipDetector shipDetector;
     [SerializeField] private ContainerLoader containerLoader;
     [SerializeField] private DockManager dockManager;
 
     [Header("Configuration")] 
     [SerializeField] private int dockCount = 5;
-
     [SerializeField] private float gapBetweenDocks = 2f;
     [SerializeField] private float shipDetectionDistance = 3f;
 
@@ -19,26 +17,27 @@ public class LoadingManager : MonoBehaviour
     {
         ValidateComponents();
         InitializeSystem();
+        
+        
+        
     }
 
     private void InitializeSystem()
     {
-        // Find and subscribe to all containers in the scene
         var containers = FindObjectsOfType<Container>();
         foreach (var container in containers) container.OnContainerFilled += HandleFilledContainer;
-
         dockManager.InitializeDocks(dockCount, gapBetweenDocks);
     }
 
     private void ValidateComponents()
     {
-        shipDetector = shipDetector ?? GetComponent<ShipDetector>();
-        containerLoader = containerLoader ?? GetComponent<ContainerLoader>();
-        dockManager = dockManager ?? GetComponent<DockManager>();
+        shipDetector ??= GetComponent<ShipDetector>();
+        containerLoader ??= GetComponent<ContainerLoader>();
+        dockManager ??= GetComponent<DockManager>();
 
         if (shipDetector == null || containerLoader == null || dockManager == null)
         {
-            Debug.LogError("Required components missing on LoadingManager!");
+            Debug.LogError("Load the Missing Components!");
             enabled = false;
         }
     }
@@ -46,7 +45,6 @@ public class LoadingManager : MonoBehaviour
     private void HandleFilledContainer(IContainer container)
     {
         if (!container.IsFilled) return;
-
         var shipDetected = shipDetector.DetectShip(
             transform.position,
             transform.forward,
@@ -82,7 +80,7 @@ public class LoadingManager : MonoBehaviour
     {
         Transform availableDock = dockManager.GetAvailableDock();
         if (availableDock != null)
-            containerLoader.LoadContainer(container as Container, availableDock);
+            containerLoader.LoadContainer(container as Container, availableDock); 
         else
             Debug.LogWarning("No available docks to load container!");
     }

@@ -9,11 +9,11 @@ public class ContainerLoader : MonoBehaviour, IContainerLoader
         if (container == null || destination == null)
             return false;
 
-        StartCoroutine(LoadingRoutine(container, destination));
+        StartCoroutine(LoadingProcess(container, destination));
         return true;
     }
 
-    private System.Collections.IEnumerator LoadingRoutine(Container container, Transform destination)
+    private System.Collections.IEnumerator LoadingProcess(Container container, Transform destination)
     {
         Vector3 startPos = container.transform.position;
         Vector3 endPos = destination.position;
@@ -22,10 +22,11 @@ public class ContainerLoader : MonoBehaviour, IContainerLoader
 
         while (container.transform.position != endPos)
         {
-            float distanceCovered = (Time.time - startTime) * loadingSpeed;
-            float t = distanceCovered / length; 
+            float distanceCovered = (Time.time - startTime) * loadingSpeed; 
+            float coveredSoFar = distanceCovered / length;
             
-            container.transform.position = Vector3.Lerp(startPos, endPos, t);
+            container.transform.position = Vector3.Lerp(startPos, endPos, coveredSoFar);
+            container.transform.SetParent(destination);
             yield return null;
         }
     }

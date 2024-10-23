@@ -20,6 +20,7 @@ TagManager:
   - OrangeShip
   - PinkShip
   - OrangeCar
+  - Container
   layers:
   - Default
   - TransparentFX
