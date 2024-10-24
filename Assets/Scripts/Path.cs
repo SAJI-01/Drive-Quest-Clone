@@ -17,9 +17,6 @@ public class Path : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R)) // Add a key to manually reset all cars (for testing)
-            ResetAllCars();
-
         if (AreComponentsValid()) UpdateLineRendererWithMovingObject();
     }
 
@@ -92,11 +89,5 @@ public class Path : MonoBehaviour
     private float GetNormalizedIndex(int index)
     {
         return index / (float)(segmentCount - 1);
-    }
-
-    private void ResetAllCars()
-    {
-        StartCoroutine(car.GetComponent<Car>().ResetToStart());
-        Car.ResetGlobalCollisionState();
     }
 }

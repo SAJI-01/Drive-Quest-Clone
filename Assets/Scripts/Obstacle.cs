@@ -1,23 +1,27 @@
-using System;
 using UnityEngine;
+using UnityEngine.Splines;
 
-public class Obstacle : MonoBehaviour, IInteractable
+public class Obstacle : MonoBehaviour, IInteractable 
 {
     public void Interact()
     {
-        Debug.Log($"Hit obstacle: <color=red>{gameObject.name}</color>");
+        Debug.Log($"Hit obstacle: {gameObject.name}");
     }
     
     public void DisableAllColliders()
     {
-        foreach (var collider in GetComponents<BoxCollider>())
+        foreach (var collider in GetComponents<Collider>())
         {
             collider.enabled = false;
         }
     }
-
+    
     private void OnCollisionEnter(Collision other)
     {
-        other.gameObject.GetComponent<Car>().ResetToStart();
+        Car car = other.gameObject.GetComponent<Car>();
+        if (car != null && car.GetComponent<SplineAnimate>().IsPlaying)
+        {
+            car.hasCollided = true;
+        }
     }
 }

@@ -1,12 +1,15 @@
+using System;
 using UnityEngine;
 
-public class HandleCar : MonoBehaviour
+public class HandleCar : MonoBehaviour 
 {
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.TryGetComponent<IInteractable>(out var interactable))
+        if(collision.gameObject.GetComponent<Car>() != null)
         {
-            interactable.Interact();
+            //reset the start 
+            StartCoroutine(collision.gameObject.GetComponent<Car>().ResetToStart());
         }
     }
 }

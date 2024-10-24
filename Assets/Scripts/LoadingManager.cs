@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
@@ -122,11 +123,12 @@ public class LoadingManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         Vector3 departurePosition = departingShip.transform.position + Vector3.right * shipSpacing * 2;
         departingShip.transform.DOMove(departurePosition, shipMoveSpeed)
-            .OnComplete(() => Destroy(departingShip.gameObject));
+            .OnComplete(() => Destroy(departingShip.gameObject) );
         
         if (shipQueue.Count > 0)
         {
             Ship nextShip = shipQueue.Peek(); // Peek the next ship in the queue
+            if (nextShip != null)
             yield return StartCoroutine(MoveNextShipToLoadingPosition(nextShip));
         }
 
@@ -135,14 +137,9 @@ public class LoadingManager : MonoBehaviour
 
     private IEnumerator MoveNextShipToLoadingPosition(Ship ship)
     {
-        // Move ship to the loading/spawn position
         ship.transform.DOMove(shipSpawnPoint.position, shipMoveSpeed);
         yield return new WaitForSeconds(shipMoveSpeed);
-
-        // Wait a moment before starting to load containers
         yield return new WaitForSeconds(waitTimeBeforeLoading);
-
-        // Load any matching containers from the dock
         yield return StartCoroutine(LoadDockedContainers(ship));
     }
 
@@ -156,22 +153,19 @@ public class LoadingManager : MonoBehaviour
             foreach (var container in containersToLoad)
             {
                 if (ship.IsFullyLoaded) break;
-
                 Transform slot = ship.GetNextAvailableSlot();
                 if (slot != null)
                 {
                     containerLoader.LoadContainer(container, slot);
                     dockedContainers[shipType].Remove(container);
                 }
-
-                yield return new WaitForSeconds(0.5f);
             }
-
             if (ship.IsFullyLoaded)
             {
                 ProcessFullyLoadedShip();
             }
         }
+        yield return null;
     }
 
     private void LoadOntoDock(IContainer container)
