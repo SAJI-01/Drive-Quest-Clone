@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,12 @@ public class LoadingManager : MonoBehaviour
     [SerializeField] private Vector3 dockScale;
     [SerializeField] private Transform shipSpawnPoint;
     [SerializeField] private float shipSpacing = 10f;
+    [SerializeField] private float waitTimeBeforeLoading = 1f;
+    [SerializeField] private float shipMoveSpeed = 2f;
 
     private Queue<Ship> shipQueue = new Queue<Ship>();
     private Dictionary<string, List<Container>> dockedContainers = new Dictionary<string, List<Container>>();
+    private bool isProcessingShipMovement = false;
 
     private void Awake()
     {
@@ -39,7 +43,9 @@ public class LoadingManager : MonoBehaviour
 
     private void InitializeShipQueue()
     {
-        var ships = FindObjectsOfType<Ship>().OrderBy(s => Vector3.Distance(shipSpawnPoint.position, s.transform.position)).ToList();
+        var ships = FindObjectsOfType<Ship>()
+            .OrderBy(s => Vector3.Distance(shipSpawnPoint.position, s.transform.position))
+            .ToList();
 
         foreach (var ship in ships)
         {
@@ -50,21 +56,8 @@ public class LoadingManager : MonoBehaviour
 
     private void PositionShipInQueue(Ship ship, int queuePosition)
     {
-        Vector3 targetPosition = shipSpawnPoint.position + Vector3.right * (shipSpacing * queuePosition);
+        Vector3 targetPosition = shipSpawnPoint.position - Vector3.right * (shipSpacing * queuePosition);
         ship.transform.position = targetPosition;
-    }
-
-    private void ValidateComponents()
-    {
-        shipDetector ??= GetComponent<ShipDetector>();
-        containerLoader ??= GetComponent<ContainerLoader>();
-        dockManager ??= GetComponent<DockManager>();
-
-        if (shipDetector == null || containerLoader == null || dockManager == null)
-        {
-            Debug.LogError("Missing required components!");
-            enabled = false;
-        }
     }
 
     private void HandleFilledContainer(IContainer container)
@@ -95,8 +88,6 @@ public class LoadingManager : MonoBehaviour
         {
             LoadOntoDock(container);
         }
-
-        CheckDockedContainersForLoading();
     }
 
     private void LoadOntoShip(IContainer container, Ship ship)
@@ -107,8 +98,7 @@ public class LoadingManager : MonoBehaviour
             containerLoader.LoadContainer(container as Container, slot);
             if (ship.IsFullyLoaded)
             {
-                shipQueue.Dequeue();
-                StartCoroutine(MoveShipQueueForward());
+                ProcessFullyLoadedShip();
             }
         }
         else
@@ -117,14 +107,80 @@ public class LoadingManager : MonoBehaviour
         }
     }
 
+    private void ProcessFullyLoadedShip()
+    {
+        if (!isProcessingShipMovement)
+        {
+            isProcessingShipMovement = true;
+            Ship departingShip = shipQueue.Dequeue();
+            StartCoroutine(ShipDepartureSequence(departingShip));
+        }
+    }
+
+    private IEnumerator ShipDepartureSequence(Ship departingShip)
+    {
+        yield return new WaitForSeconds(1.5f);
+        Vector3 departurePosition = departingShip.transform.position + Vector3.right * shipSpacing * 2;
+        departingShip.transform.DOMove(departurePosition, shipMoveSpeed)
+            .OnComplete(() => Destroy(departingShip.gameObject));
+        
+        if (shipQueue.Count > 0)
+        {
+            Ship nextShip = shipQueue.Peek(); // Peek the next ship in the queue
+            yield return StartCoroutine(MoveNextShipToLoadingPosition(nextShip));
+        }
+
+        isProcessingShipMovement = false;
+    }
+
+    private IEnumerator MoveNextShipToLoadingPosition(Ship ship)
+    {
+        // Move ship to the loading/spawn position
+        ship.transform.DOMove(shipSpawnPoint.position, shipMoveSpeed);
+        yield return new WaitForSeconds(shipMoveSpeed);
+
+        // Wait a moment before starting to load containers
+        yield return new WaitForSeconds(waitTimeBeforeLoading);
+
+        // Load any matching containers from the dock
+        yield return StartCoroutine(LoadDockedContainers(ship));
+    }
+
+    private IEnumerator LoadDockedContainers(Ship ship)
+    {
+        string shipType = ship.ShipType;
+
+        if (dockedContainers.ContainsKey(shipType))
+        {
+            var containersToLoad = dockedContainers[shipType].ToList();
+            foreach (var container in containersToLoad)
+            {
+                if (ship.IsFullyLoaded) break;
+
+                Transform slot = ship.GetNextAvailableSlot();
+                if (slot != null)
+                {
+                    containerLoader.LoadContainer(container, slot);
+                    dockedContainers[shipType].Remove(container);
+                }
+
+                yield return new WaitForSeconds(0.5f);
+            }
+
+            if (ship.IsFullyLoaded)
+            {
+                ProcessFullyLoadedShip();
+            }
+        }
+    }
+
     private void LoadOntoDock(IContainer container)
     {
         Transform availableDock = dockManager.GetAvailableDock();
         if (availableDock != null)
         {
-            containerLoader.LoadContainer(container as Container, availableDock);
+            containerLoader.LoadContainer(container as Container, availableDock,true);
             
-            // Store container reference by type
             string containerType = container.CarType;
             if (!dockedContainers.ContainsKey(containerType))
             {
@@ -138,46 +194,16 @@ public class LoadingManager : MonoBehaviour
         }
     }
 
-    private void CheckDockedContainersForLoading()
+    private void ValidateComponents()
     {
-        if (shipQueue.Count == 0) return;
+        shipDetector ??= GetComponent<ShipDetector>();
+        containerLoader ??= GetComponent<ContainerLoader>();
+        dockManager ??= GetComponent<DockManager>();
 
-        Ship currentShip = shipQueue.Peek();
-        string shipType = currentShip.ShipType;
-
-        if (dockedContainers.ContainsKey(shipType))
+        if (shipDetector == null || containerLoader == null || dockManager == null)
         {
-            var containersToLoad = dockedContainers[shipType].ToList();
-            foreach (var container in containersToLoad)
-            {
-                if (currentShip.IsFullyLoaded) break;
-
-                Transform slot = currentShip.GetNextAvailableSlot();
-                if (slot != null)
-                {
-                    containerLoader.LoadContainer(container, slot);
-                    dockedContainers[shipType].Remove(container);
-                }
-            }
-
-            if (currentShip.IsFullyLoaded)
-            {
-                shipQueue.Dequeue();
-                StartCoroutine(MoveShipQueueForward());
-            }
-        }
-    }
-
-    private System.Collections.IEnumerator MoveShipQueueForward()
-    {
-        yield return new WaitForSeconds(1f); // Wait for current ship to start moving
-
-        int queuePosition = 0;
-        foreach (var ship in shipQueue)
-        {
-            Vector3 newPosition = shipSpawnPoint.position + Vector3.right * (shipSpacing * queuePosition);
-            ship.transform.DOMove(newPosition, 2f);
-            queuePosition++;
+            Debug.LogError("Missing required components!");
+            enabled = false;
         }
     }
 

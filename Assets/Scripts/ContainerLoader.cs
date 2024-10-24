@@ -4,16 +4,16 @@ public class ContainerLoader : MonoBehaviour, IContainerLoader
 {
     [SerializeField] private float loadingSpeed = 5f;
 
-    public bool LoadContainer(Container container, Transform destination)
+    public bool LoadContainer(Container container, Transform destination,bool isDockedContainer =false)
     {
         if (container == null || destination == null)
             return false;
 
-        StartCoroutine(LoadingProcess(container, destination));
+        StartCoroutine(LoadingProcess(container, destination,isDockedContainer));
         return true;
     }
 
-    private System.Collections.IEnumerator LoadingProcess(Container container, Transform destination)
+    private System.Collections.IEnumerator LoadingProcess(Container container, Transform destination ,bool isDockedContainer)
     {
         Vector3 startPos = container.transform.position;
         Vector3 endPos = destination.position;
@@ -36,6 +36,13 @@ public class ContainerLoader : MonoBehaviour, IContainerLoader
             }
             yield return null;
         }
-        container.transform.SetParent(destination);
+        container.transform.position = endPos;
+        container.transform.localRotation = Quaternion.Euler(endRot);
+        
+        if(!isDockedContainer)
+        {
+            container.transform.SetParent(destination);
+        }
+        
     }
 }
